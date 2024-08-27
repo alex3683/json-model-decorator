@@ -1,0 +1,41 @@
+{
+  "name": "json-model-decorator",
+  "version": "0.1.0",
+  "description": "A simple json model (de-)serializer helper based on TC39 JavaScript / TypeScript decorators.",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "vitest",
+    "dist": "tsup"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alex3683/json-model-decorator.git"
+  },
+  "keywords": [
+    "json",
+    "model",
+    "dto",
+    "decorator",
+    "deserialization",
+    "serialization",
+    "deserializer",
+    "serializer"
+  ],
+  "author": "Alexander Wilden",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/alex3683/json-model-decorator/issues"
+  },
+  "homepage": "https://github.com/alex3683/json-model-decorator#readme",
+  "devDependencies": {
+    "@eslint/js": "^9.9.1",
+    "eslint": "^9.9.1",
+    "globals": "^15.9.0",
+    "tsup": "^8.1.0",
+    "typescript": "^5.5.3",
+    "typescript-eslint": "^8.3.0",
+    "vitest": "^2.0.1"
+  }
+}
