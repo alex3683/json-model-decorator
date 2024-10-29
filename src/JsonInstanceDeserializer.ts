@@ -1,19 +1,33 @@
 import { Constructor } from './Constructor';
-import { asInstance } from './JsonProperty';
+import { asInstance, RawJson } from './JsonProperty';
+import { Nullable } from './Nullable';
 
 export function jsonInstanceDeserializer<T extends object>(
   constructor: Constructor<T>,
   fallbackValueFactory?: () => T
-): (raw: any) => T | null{
-  return (raw: any) => {
-    if (raw == null) {
-      return fallbackValueFactory ? fallbackValueFactory() : null;
+): (raw: Nullable<RawJson<T>>) => T {
+  return (raw: Nullable<RawJson<T>>) => {
+    if (!raw && !fallbackValueFactory) {
+      throw new Error('Expected object or fallback factory');
     }
 
-    if (typeof raw !== 'object' || Array.isArray(raw)) {
+    if (raw && (typeof raw !== 'object' || Array.isArray(raw))) {
       throw new Error('Expected object');
     }
 
-    return asInstance(constructor, raw);
+    return (raw ? asInstance(constructor, raw) : fallbackValueFactory?.()) as T
   };
+}
+
+export function jsonNullableInstanceDeserializer<T extends object>(
+  constructor: Constructor<T>,
+  fallbackValueFactory?: () => Nullable<T>
+): (raw: Nullable<RawJson<T>>) => Nullable<T> {
+  return (raw: Nullable<RawJson<T>>) => {
+    if (raw && (typeof raw !== 'object' || Array.isArray(raw))) {
+      throw new Error('Expected object');
+    }
+    
+    return (raw ? asInstance(constructor, raw) : fallbackValueFactory?.()) as Nullable<T> ?? null;
+  }
 }

@@ -1,10 +1,10 @@
 import { Constructor } from './Constructor';
-import { asInstance } from './JsonProperty';
+import { asInstance, RawJson } from './JsonProperty';
 
 export function jsonArrayInstanceDeserializer<T extends object>(
   constructor: Constructor<T>
-): (raw: any[]) => T[] {
-  return (raw: any[]) => {
+): (raw: RawJson<T>[]) => T[] {
+  return (raw: RawJson<T>[]) => {
     if (!Array.isArray(raw)) {
       throw new Error('Expected array');
     }

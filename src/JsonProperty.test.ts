@@ -1,29 +1,29 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { jsonDateDeserializer } from './JsonDateDeserializer';
-import { jsonInstanceDeserializer } from './JsonInstanceDeserializer';
+import { jsonNullableInstanceDeserializer } from './JsonInstanceDeserializer';
 import { asInstance, asInstances, jsonProperty, parseAsInstance, parseAsInstances } from './JsonProperty';
 
 class Wheel {
   @jsonProperty()
-  public size: number = 22;
+  public accessor size: number = 22;
 }
 
 class Car {
-  @jsonProperty({ deserialize: jsonInstanceDeserializer(Wheel) })
-  public wheel: Wheel | null = null;
+  @jsonProperty({ deserialize: jsonNullableInstanceDeserializer(Wheel) })
+  public accessor wheel: Wheel | null = null;
 
   @jsonProperty({ deserialize: jsonDateDeserializer() })
   public accessor buildDate!: Date;
 
-  public ignored!: string;
+  public accessor ignored!: string;
 }
 
 class PlainCar {
-  public wheel!: Wheel;
+  public accessor wheel!: Wheel;
 
-  public buildDate!: Date;
+  public accessor buildDate!: Date;
 
-  public ignored!: string;
+  public accessor ignored!: string;
 }
 
 const jsonString =
@@ -32,28 +32,30 @@ const jsonString =
 describe('jsonProperty', () => {
   it('throws when used on static properties', () => {
     expect(() => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class Test {
         @jsonProperty()
-        public static prop = 1;
+        public static accessor prop = 1;
       }
     }).toThrow('jsonProperty cannot be used with static properties');
   });
 
   it('throws when used on unsupported kinds', () => {
     expect(() => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class Test {
-        // @ts-expect-error
+        // @ts-expect-error a method is not a valid target
         @jsonProperty()
         public method() {}
       }
-    }).toThrow('jsonProperty can only be used on field or accessors, but set on kind method');
+    }).toThrow('jsonProperty can only be used on accessors, but set on kind method');
   });
 });
 
 describe('asInstance', () => {
 
   describe('for model with decorators', () => {
-    let instance: any;
+    let instance: Car;
 
     beforeEach(() => {
       const obj = JSON.parse(jsonString);
@@ -64,8 +66,8 @@ describe('asInstance', () => {
       expect(instance.constructor).toBe(Car);
       expect(instance.wheel).toBeDefined();
       
-      expect(instance.wheel.constructor).toBe(Wheel);
-      expect(instance.wheel.size).toBe(25);
+      expect(instance.wheel!.constructor).toBe(Wheel);
+      expect(instance.wheel!.size).toBe(25);
       expect(instance.buildDate.constructor).toBe(Date);
       expect(instance.buildDate.getMonth()).toBe(9);
     });
@@ -75,20 +77,21 @@ describe('asInstance', () => {
 
       expect(instance.constructor).toBe(Car);
       expect(instance.wheel).toBeDefined();
-      expect(instance.wheel.constructor).toBe(Wheel);
-      expect(instance.wheel.size).toBe(25);
+      expect(instance.wheel!.constructor).toBe(Wheel);
+      expect(instance.wheel!.size).toBe(25);
       expect(instance.buildDate.constructor).toBe(Date);
       expect(instance.buildDate.getMonth()).toBe(9);
     });
 
     it('ignores fields that are not decorated', () => {
       expect(instance.ignored).toBeUndefined();
+      // @ts-expect-error testing invalid input
       expect(instance.iWasNotHereInTheFirstPlace).toBeUndefined();
     });
   });
 
   describe('for a model without decorators', () => {
-    let instance: any;
+    let instance: PlainCar;
 
     beforeEach(() => {
       const obj = JSON.parse(jsonString);
@@ -103,6 +106,7 @@ describe('asInstance', () => {
 
     it('sets all provided properties not part of the instance', () => {
       expect(instance.ignored).toBe('hello!');
+      // @ts-expect-error testing invalid input
       expect(instance.iWasNotHereInTheFirstPlace).toBe(true);
     });
 

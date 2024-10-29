@@ -5,9 +5,13 @@
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "test": "vitest",
-    "dist": "tsup"
+    "dist": "tsup",
+    "lint": "eslint --fix src"
   },
   "repository": {
     "type": "git",
