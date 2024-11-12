@@ -4,7 +4,7 @@ import { jsonNullableInstanceDeserializer } from './JsonInstanceDeserializer';
 import { asInstance, asInstances, jsonProperty, parseAsInstance, parseAsInstances } from './JsonProperty';
 
 class Wheel {
-  @jsonProperty()
+  @jsonProperty({serialize: (value: number) => value * 2})
   public accessor size: number = 22;
 }
 
@@ -146,5 +146,16 @@ describe('parseAsInstances', () => {
     expect(instances.length).toBe(2);
     expect(instances[0].constructor).toBe(Car);
     expect(instances[1].constructor).toBe(Car);
+  });
+});
+
+describe('on serialization', () => {
+  it('calls a custom serialize function', () => {
+    const instance = parseAsInstance(Car, jsonString);
+    instance.wheel!.size = 30;
+    const clone = asInstance(Car, JSON.parse(JSON.stringify(instance)));
+
+    expect(clone.wheel!.size).toBe(60);
+    expect(instance.wheel!.size).toBe(30);
   });
 });

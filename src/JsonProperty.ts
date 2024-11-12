@@ -84,13 +84,13 @@ export function jsonProperty<ClassType extends object, PropertyType>(
       definitionMap.get(type)!.set(context.name.toString(), createDefinition(definition));
 
        
-      type.prototype.toJSON = () => {
+      type.prototype.toJSON = function()  {
         const definitions = definitionMap.get(type);
         if (!definitions) {
           return {};
         }
 
-        const instance = this as Record<keyof ClassType, unknown>;
+        const instance = this as ClassType;
         const result: Record<string, unknown> = {};
         (
           Array.from(definitions.entries()) as Array<[keyof ClassType, JsonPropertyDefinition<unknown, unknown>]>
